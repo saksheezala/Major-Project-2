@@ -1,0 +1,3 @@
+The AI-Driven DevSecOps Pipeline is an intelligent Continuous Integration and Continuous Deployment (CI/CD) framework designed to automatically detect and remediate vulnerabilities before software deployment.
+By integrating popular security scanners such as SonarQube, Trivy, and OWASP Dependency-Check with AI-based analysis, this pipeline ensures every code commit is tested for vulnerabilities, misconfigurations, and dependency issues. The AI component leverages Large Language Models (LLMs) to interpret scan results and generate human-readable summaries and automated remediation suggestions.
+This approach bridges the gap between security automation and intelligent remediation, helping developers ship secure code faster with minimal manual effort.

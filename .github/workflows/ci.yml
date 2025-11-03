@@ -20,19 +20,20 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.13.0
-        with:
-          image-ref: 'Dockerfile'
-          format: 'table'
-          exit-code: '0'
-          output: 'trivy-report.txt'
+        run: |
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_Linux-64bit.tar.gz
+          tar zxvf trivy_Linux-64bit.tar.gz
+          sudo mv trivy /usr/local/bin/
+          mkdir -p reports
+          trivy fs . > reports/trivy-report.txt || true
         continue-on-error: true
 
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
-          path: trivy-report.txt
+          path: reports/trivy-report.txt
 
       - name: Run OWASP Dependency-Check
         env:

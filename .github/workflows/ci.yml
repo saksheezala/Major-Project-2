@@ -36,14 +36,16 @@ jobs:
 
       - name: Run OWASP Dependency Check
         run: |
-          sudo apt-get update && sudo apt-get install -y default-jdk wget unzip
-          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.0.2/dependency-check-8.0.2-release.zip -O dc.zip
-          unzip dc.zip
-          ./dependency-check/bin/dependency-check.sh --project "myapp" --scan . --format HTML --out dependency-report.html
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jre wget unzip
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+          unzip dependency-check-8.4.0-release.zip
+          mkdir reports
+          ./dependency-check/bin/dependency-check.sh --scan . --format HTML --out ./reports/
         continue-on-error: true
 
       - name: Upload dependency-check report
         uses: actions/upload-artifact@v4
         with:
           name: dependency-report
-          path: dependency-report.html
+          path: ./reports/dependency-check-report.html

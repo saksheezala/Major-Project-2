@@ -34,16 +34,18 @@ jobs:
           name: trivy-report
           path: trivy-report.txt
 
-      - name: Run OWASP Dependency Check
+      - name: Run OWASP Dependency-Check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-         sudo apt-get update
-         sudo apt-get install -y openjdk-17-jre wget unzip
-         wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
-         unzip dependency-check-8.4.0-release.zip
-         mkdir -p reports
-         ./dependency-check/bin/dependency-check.sh --scan . --format HTML --out ./reports/
-         echo "=== List reports directory ==="
-         ls -R ./reports
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jre wget unzip
+          wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+          unzip dependency-check-8.4.0-release.zip
+          mkdir -p reports
+          ./dependency-check/bin/dependency-check.sh --scan . --format HTML --out ./reports/ --nvdApiKey "$NVD_API_KEY"
+          echo "=== List reports directory ==="
+          ls -R ./reports
         continue-on-error: true
 
       - name: Upload dependency-check report

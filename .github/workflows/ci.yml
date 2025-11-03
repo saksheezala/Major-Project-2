@@ -43,7 +43,7 @@ jobs:
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v12.1.0/dependency-check-12.1.0-release.zip
           unzip dependency-check-12.1.0-release.zip
           mkdir -p reports
-          ./dependency-check/bin/dependency-check.sh -s . -f HTML -o ./reports --nvdApiKey "$NVD_API_KEY"
+          ./dependency-check/bin/dependency-check.sh -s . -f HTML -o ./reports --nvdApiKey "$NVD_API_KEY" --disableOssIndex
           echo "=== List reports directory ==="
           ls -R ./reports
         continue-on-error: true

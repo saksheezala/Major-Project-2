@@ -1,4 +1,4 @@
-name: CI Security Scan
+name: Security Scan Pipeline
 
 on:
   push:
@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1️⃣ Pull code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Python (for dependency installs)
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -20,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt || true
 
-      # ✅ Fixed Trivy setup using official repo (no tarballs)
+      # 3️⃣ Install Trivy cleanly
       - name: Install Trivy
         run: |
           sudo apt-get update
@@ -30,6 +32,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy
 
+      # 4️⃣ Run Trivy filesystem scan
       - name: Run Trivy vulnerability scanner
         run: |
           mkdir -p reports
@@ -44,10 +47,8 @@ jobs:
           name: trivy-report
           path: reports/trivy-report.txt
 
-      # ✅ Fixed Dependency-Check (removed invalid flag)
+      # 5️⃣ Run OWASP Dependency-Check (latest version, no invalid flags)
       - name: Run OWASP Dependency-Check
-        env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jre wget unzip
@@ -56,11 +57,11 @@ jobs:
           mkdir -p reports
           echo "Running OWASP Dependency-Check..."
           ./dependency-check/bin/dependency-check.sh -s . -f HTML -o ./reports --disableOssIndex
-          echo "=== List reports directory ==="
-          ls -R ./reports || true
+          echo "=== Reports directory ==="
+          ls -l ./reports || true
         continue-on-error: true
 
-      - name: Upload Dependency Check report
+      - name: Upload Dependency-Check report
         uses: actions/upload-artifact@v4
         with:
           name: dependency-report

@@ -61,13 +61,11 @@ jobs:
             -s . \
             -f HTML \
             -o ./reports \
-            --property nvd.api.key=$NVD_API_KEY \
+            -Danalyzer.nvd.api.key=$NVD_API_KEY \
             --disableOssIndex
           echo "=== Reports directory ==="
           ls -l ./reports || true
         continue-on-error: true
-
-
 
       - name: Upload Dependency-Check report
         uses: actions/upload-artifact@v4

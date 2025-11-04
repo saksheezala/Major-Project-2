@@ -1,4 +1,4 @@
-name: Security Scan Pipeline
+name: CI Security Scan
 
 on:
   push:
@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the code
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Python (for dependency installs)
+      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt || true
 
-      # 3️⃣ Install Trivy (official repo method)
+      # 3️⃣ Install Trivy from Aqua Security’s official repo
       - name: Install Trivy
         run: |
           sudo apt-get update
@@ -32,7 +32,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y trivy
 
-      # 4️⃣ Run Trivy filesystem scan (detect vulnerabilities)
+      # 4️⃣ Run Trivy scan
       - name: Run Trivy vulnerability scanner
         run: |
           mkdir -p reports
@@ -47,7 +47,7 @@ jobs:
           name: trivy-report
           path: reports/trivy-report.txt
 
-      # 5️⃣ Run OWASP Dependency-Check
+      # 5️⃣ Run OWASP Dependency-Check with NVD API key
       - name: Run OWASP Dependency-Check
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -57,9 +57,12 @@ jobs:
           wget https://github.com/jeremylong/DependencyCheck/releases/download/v12.1.0/dependency-check-12.1.0-release.zip
           unzip dependency-check-12.1.0-release.zip
           mkdir -p reports
-          echo "Running OWASP Dependency-Check..."
-          # Runs using your NVD API key (if provided)
-          ./dependency-check/bin/dependency-check.sh -s . -f HTML -o ./reports
+          echo "Running OWASP Dependency-Check with API key..."
+          ./dependency-check/bin/dependency-check.sh \
+            -s . \
+            -f HTML \
+            -o ./reports \
+            -Danalyzer.nvd.api.key="$NVD_API_KEY"
           echo "=== Reports directory ==="
           ls -l ./reports || true
         continue-on-error: true
